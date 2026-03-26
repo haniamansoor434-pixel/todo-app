@@ -54,7 +54,7 @@ export default function FilterTasksPriority({ tasks, setFilteredTasks }) {
               onClick={() => handleSelect("")}
               className={`w-full text-left px-4 py-2 text-sm font-medium transition-colors
                   ${selectedPriority === "" ?
-                    "bg-gradient-to-r from-blue-500  to-purple-400 text-white" : 
+                    "bg-gradient-to-r from-blue-500  to-purple-400 text-white " : 
                     "text-gray-500 hover:bg-blue-100 hover:text-gray-900"}
                 `}
             >
