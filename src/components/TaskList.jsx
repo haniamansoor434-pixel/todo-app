@@ -3,7 +3,7 @@ import { Trash } from "lucide-react";
 import { doc, deleteDoc, updateDoc } from "firebase/firestore";
 import db from "../../firebase";
 
-export default function TaskList({ tasks, successMsg, setSuccessMsg,showChecked=false }) {
+export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked = false }) {
   const [taskToDelete, setTaskToDelete] = useState(null);
 
   // Permanently delete task from Firestore
@@ -37,67 +37,71 @@ export default function TaskList({ tasks, successMsg, setSuccessMsg,showChecked=
 
   return (
     <>
-      {(showChecked ? tasks : tasks.filter((task) => !task.checked)).map((task)  => (
-          <div
-            key={task.id}
-            className="flex items-center h-20 justify-between bg-white/80 shadow-sm hover:shadow-md transition rounded-xl px-5 py-4 m-5 "
-          >
-            {/* LEFT */}
-            <div className="flex items-center gap-4 flex-1">
-              <input
-                type="checkbox"
-                checked={task.checked || false}
-                onChange={() => toggleChecked(task)}
-                className="w-5 h-5 border rounded-md accent-green-600 cursor-pointer"
-              />
-              <div className="flex flex-col w-170">
-                <p className="text-gray-800 font-medium">{task.text}</p>
-              </div>
-            </div>
-
-            {/* RIGHT */}
-            <div className="flex items-center gap-4">
-              <span
-                className={`text-xs px-3 py-1 rounded-full text-white
-                  ${task.priority === "High" ? "bg-red-500 " : ""}
-                  ${task.priority === "Medium" ? "bg-orange-400" : ""}
-                  ${task.priority === "Low" ? "bg-blue-400" : ""}
-                `}
-              >
-                {task.priority || "Low"}
-              </span>
-              <span className="text-sm text-gray-500">
-                {task.checked ? "Done" : "In Progress"}
-              </span>
-
-              {/* Delete Button */}
-              <button
-                onClick={() => setTaskToDelete(task)}
-                className="text-red-500 hover:text-red-700"
-              >
-                <Trash size={18} />
-              </button>
+      {(showChecked ? tasks : tasks.filter((task) => !task.checked)).map((task) => (
+        <div
+          key={task.id}
+          className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center sm:justify-between bg-white/80 shadow-sm hover:shadow-md transition-shadow rounded-xl p-3 sm:p-4 md:p-5 mx-2 sm:mx-3 md:mx-5 my-2 sm:my-3"
+        >
+          {/* LEFT - Checkbox and Task Text */}
+          <div className="flex items-start sm:items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
+            <input
+              type="checkbox"
+              checked={task.checked || false}
+              onChange={() => toggleChecked(task)}
+              className="w-4 h-4 sm:w-5 sm:h-5 border rounded-md accent-green-600 cursor-pointer flex-shrink-0 mt-0.5 sm:mt-0"
+            />
+            <div className="flex flex-col min-w-0 flex-1">
+              <p className="text-sm sm:text-base text-gray-800 font-medium break-words line-clamp-3">
+                {task.text}
+              </p>
             </div>
           </div>
-        ))}
+
+          {/* RIGHT - Priority, Status, Delete */}
+          <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 flex-wrap">
+            <span
+              className={`text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full text-white whitespace-nowrap font-medium
+                ${task.priority === "High" ? "bg-red-500" : ""}
+                ${task.priority === "Medium" ? "bg-orange-400" : ""}
+                ${task.priority === "Low" ? "bg-blue-400" : ""}
+              `}
+            >
+              {task.priority || "Low"}
+            </span>
+
+            <span className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">
+              {task.checked ? "Done" : "In Progress"}
+            </span>
+
+            {/* Delete Button */}
+            <button
+              onClick={() => setTaskToDelete(task)}
+              className="text-red-500 hover:text-red-700 transition-colors flex-shrink-0 p-1"
+              aria-label="Delete task"
+            >
+              <Trash size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+          </div>
+        </div>
+      ))}
 
       {/* Delete Confirmation Modal */}
       {taskToDelete && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-2xl p-6 w-96">
-            <h3 className="text-xl font-bold mb-4">Delete Task</h3>
-            <p className="mb-6">
+        <div className="fixed inset-0 flex items-end sm:items-center justify-center bg-black/50 z-50 p-4">
+          <div className="bg-white rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 w-full sm:w-full sm:max-w-md">
+            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Delete Task</h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-6 break-words">
               Are you sure you want to delete "{taskToDelete.text}"?
             </p>
-            <div className="flex justify-end gap-4">
+            <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
               <button
-                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+                className="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm sm:text-base font-medium transition-colors"
                 onClick={() => setTaskToDelete(null)}
               >
                 Cancel
               </button>
               <button
-                className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
+                className="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 text-sm sm:text-base font-medium transition-colors"
                 onClick={() => deleteTask(taskToDelete.id)}
               >
                 Delete
@@ -107,9 +111,9 @@ export default function TaskList({ tasks, successMsg, setSuccessMsg,showChecked=
         </div>
       )}
 
-      {/* Success message */}
+      {/* Success Message */}
       {successMsg && (
-        <div className="fixed top-10 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fadeInOut">
+        <div className="fixed top-4 sm:top-6 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 bg-green-500 text-white px-4 py-3 sm:px-6 sm:py-4 rounded-lg shadow-lg z-50 animate-fadeInOut text-sm sm:text-base max-w-sm">
           {successMsg}
         </div>
       )}

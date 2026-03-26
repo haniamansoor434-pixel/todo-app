@@ -10,6 +10,7 @@ import NewTask from "../components/NewTask";
 import { collection, onSnapshot } from "firebase/firestore";
 import db from "../../firebase";
 import { ClipLoader } from "react-spinners";
+import { X } from "lucide-react";
 
 export default function Todo() {
   const [active, setActive] = useState("All Tasks");
@@ -20,6 +21,7 @@ export default function Todo() {
   const [fetching, setFetching] = useState(true);
   const [search, setSearch] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const filteredTasks = tasks.filter((task) => {
     return task.text?.toLowerCase().includes(search.toLowerCase());
@@ -98,21 +100,43 @@ export default function Todo() {
   }, []);
 
   return (
-    <div className="flex bg-gray-200 h-screen ">
-      {/* Sidebar */}
-      <div className="w-64 fixed top-0 left-0 h-full bg-white">
-        <Sidebar active={active} setActive={setActive} />
+    <div className="flex bg-gray-200 h-screen overflow-hidden">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Desktop visible, Mobile slidable */}
+      <div className={`fixed md:static top-0 left-0 h-full w-56 sm:w-64 md:w-64 bg-white z-40 transform transition-transform duration-300 ${
+        sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+      }`}>
+        <div className="relative h-full flex flex-col">
+          {/* Close button on mobile */}
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="md:hidden absolute top-4 right-4 text-gray-600 hover:text-gray-900 z-50"
+          >
+            <X size={24} />
+          </button>
+          <Sidebar active={active} setActive={setActive} onClose={() => setSidebarOpen(false)} />
+        </div>
       </div>
 
-      <div className="ml-64 flex flex-col w-full">
+      {/* Main Content */}
+      <div className="flex flex-col w-full overflow-hidden">
         {/* Navbar */}
-        <div className="sticky top-0  bg-white">
+        <div className="sticky top-0 bg-white z-20 shadow-sm">
           <Navbar
             setOpenPopup={setOpenPopup}
             search={search}
             setSearch={setSearch}
             successMsg={successMsg}
             setSuccessMsg={setSuccessMsg}
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
           />
         </div>
 
@@ -129,14 +153,16 @@ export default function Todo() {
           setSuccessMsg={setSuccessMsg}
         />
 
-        <div className="flex-1 overflow-y-auto p-6">
-          {fetching ? (
-            <div className="flex justify-center py-10">
-              <ClipLoader color="blue" size={30} />
-            </div>
-          ) : (
-            renderContent()
-          )}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-2 sm:p-4 md:p-6">
+            {fetching ? (
+              <div className="flex justify-center py-10">
+                <ClipLoader color="blue" size={30} />
+              </div>
+            ) : (
+              renderContent()
+            )}
+          </div>
         </div>
       </div>
     </div>
