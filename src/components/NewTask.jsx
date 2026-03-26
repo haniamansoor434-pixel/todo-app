@@ -11,12 +11,20 @@ export default function NewTask({
   loading,
   setLoading,
   successMsg,
-  setSuccessMsg
+  setSuccessMsg,
 }) {
-  const [priority, setPriority] = useState('');
+  const [priority, setPriority] = useState("");
+  const [error, setError] = useState("");
 
   const addTask = async () => {
-    if (!task) return;
+    if (!task) {
+      setError("Please add a task");
+      return;
+    }
+
+    setError("");
+    console.log("Task added:", task);
+    setTask("");
 
     setLoading(true);
 
@@ -54,6 +62,9 @@ export default function NewTask({
             <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">
               Add New Task
             </h2>
+            {/* Error Message */}
+
+            {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
             {/* Input */}
             <input
@@ -65,7 +76,9 @@ export default function NewTask({
             />
 
             {/* Priority */}
-            <p className="text-xs sm:text-sm font-semibold text-gray-600 mb-2 sm:mb-3">Priority</p>
+            <p className="text-xs sm:text-sm font-semibold text-gray-600 mb-2 sm:mb-3">
+              Priority
+            </p>
             <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6">
               <button
                 onClick={() => setPriority("High")}
@@ -120,10 +133,30 @@ export default function NewTask({
       )}
 
       {successMsg && (
-        <div className="fixed top-4 sm:top-6 md:top-10 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 bg-green-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg shadow-lg z-50 animate-fadeInOut text-sm sm:text-base max-w-sm">
+        <div className="fixed top-4 sm:top-6 md:top-10 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 bg-green-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg z-50 animate-fadeInOut text-sm sm:text-base max-w-sm">
           {successMsg}
         </div>
       )}
     </>
   );
 }
+    //  {/* Priority */}
+    //         <p className="text-xs sm:text-sm font-semibold text-gray-600 mb-2 sm:mb-3">
+    //           Priority
+    //         </p>
+
+    //         <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6">
+    //           {["High", "Medium", "Low"].map((level) => (
+    //             <button
+    //               key={level}
+    //               onClick={() => setPriority(level)}
+    //               className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-transform duration-200 ${
+    //                 priority === level
+    //                   ? "scale-105 bg-gradient-to-r from-cyan-600 to-blue-500 text-white shadow-lg"
+    //                   : "scale-100 bg-gray-200 text-black opacity-70"
+    //               }`}
+    //             >
+    //               {level}
+    //             </button>
+    //           ))}
+    //         </div>

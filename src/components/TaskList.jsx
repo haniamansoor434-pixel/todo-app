@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Trash } from "lucide-react";
 import { doc, deleteDoc, updateDoc } from "firebase/firestore";
 import db from "../../firebase";
+import EditTask from "./Edittask";
+import FilterTasksPriority from "./FilterTasksPriority";
 
 export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked = false }) {
   const [taskToDelete, setTaskToDelete] = useState(null);
+  const [filteredTasks, setFilteredTasks] = useState(tasks);
 
-  // Permanently delete task from Firestore
+  useEffect(() => {
+    setFilteredTasks(showChecked ? tasks : tasks.filter((t) => !t.checked));
+  }, [tasks, showChecked]);
+
   const deleteTask = async (id) => {
     try {
       await deleteDoc(doc(db, "tasks", id));
@@ -19,13 +25,11 @@ export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked
     }
   };
 
-  // Mark task as completed (checked) without deleting from Firestore
   const toggleChecked = async (task) => {
     try {
       await updateDoc(doc(db, "tasks", task.id), {
         checked: !task.checked,
       });
-
       if (!task.checked) {
         setSuccessMsg(`Task "${task.text}" completed successfully!`);
         setTimeout(() => setSuccessMsg(""), 2000);
@@ -37,7 +41,13 @@ export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked
 
   return (
     <>
-      {(showChecked ? tasks : tasks.filter((task) => !task.checked)).map((task) => (
+      {/* Filter div on the right */}
+      <div className="flex justify-end mb-4 px-4">
+        <FilterTasksPriority tasks={tasks} setFilteredTasks={setFilteredTasks} />
+      </div>
+
+      {/* Task list */}
+      {filteredTasks.map((task) => (
         <div
           key={task.id}
           className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center sm:justify-between bg-white/80 shadow-sm hover:shadow-md transition-shadow rounded-xl p-3 sm:p-4 md:p-5 mx-2 sm:mx-3 md:mx-5 my-2 sm:my-3"
@@ -57,7 +67,7 @@ export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked
             </div>
           </div>
 
-          {/* RIGHT - Priority, Status, Delete */}
+          {/* RIGHT - Priority, Status, Edit, Delete */}
           <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 flex-wrap">
             <span
               className={`text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full text-white whitespace-nowrap font-medium
@@ -73,7 +83,8 @@ export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked
               {task.checked ? "Done" : "In Progress"}
             </span>
 
-            {/* Delete Button */}
+            <EditTask task={task} setSuccessMsg={setSuccessMsg} />
+
             <button
               onClick={() => setTaskToDelete(task)}
               className="text-red-500 hover:text-red-700 transition-colors flex-shrink-0 p-1"
@@ -85,7 +96,7 @@ export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked
         </div>
       ))}
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Modal */}
       {taskToDelete && (
         <div className="fixed inset-0 flex items-end sm:items-center justify-center bg-black/50 z-50 p-4">
           <div className="bg-white rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 w-full sm:w-full sm:max-w-md">
