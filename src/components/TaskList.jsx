@@ -5,13 +5,32 @@ import db from "../../firebase";
 import EditTask from "./EditTask";
 import FilterTasksPriority from "./FilterTasksPriority";
 
-export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked = false }) {
+export default function TaskList({
+  tasks,
+  successMsg,
+  setSuccessMsg,
+  showChecked = false,
+}) {
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [filteredTasks, setFilteredTasks] = useState(tasks);
-  
+  const priorityOrder = {
+    High: 1,
+    Medium: 2,
+    Low: 3,
+  };
 
   useEffect(() => {
-    setFilteredTasks(showChecked ? tasks : tasks.filter((t) => !t.checked));
+    //basetasks store only unchecked tasks
+    const baseTasks = showChecked ? tasks : tasks.filter((t) => !t.checked);
+
+    const sortedTasks = [...baseTasks].sort((a, b) => {
+      return (
+        (priorityOrder[a.priority || "Low"] || 3) -
+        (priorityOrder[b.priority || "Low"] || 3)
+      );
+    });
+
+    setFilteredTasks(sortedTasks);
   }, [tasks, showChecked]);
 
   const deleteTask = async (id) => {
@@ -44,7 +63,18 @@ export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked
     <>
       {/* Filter div on the right */}
       <div className="flex justify-end mb-4 px-4">
-        <FilterTasksPriority tasks={tasks} setFilteredTasks={setFilteredTasks} />
+        <FilterTasksPriority
+          tasks={tasks}
+          setFilteredTasks={(filtered) => {
+            const sorted = [...filtered].sort((a, b) => {
+              return (
+                (priorityOrder[a.priority || "Low"] || 3) -
+                (priorityOrder[b.priority || "Low"] || 3)
+              );
+            });
+            setFilteredTasks(sorted);
+          }}
+        />
       </div>
 
       {/* Task list */}
@@ -84,7 +114,11 @@ export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked
               {task.checked ? "Done" : "In Progress"}
             </span>
 
-            <EditTask successMsg={successMsg} task={task} setSuccessMsg={setSuccessMsg} />
+            <EditTask
+              successMsg={successMsg}
+              task={task}
+              setSuccessMsg={setSuccessMsg}
+            />
 
             <button
               onClick={() => setTaskToDelete(task)}
@@ -101,7 +135,9 @@ export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked
       {taskToDelete && (
         <div className="fixed inset-0 flex items-end sm:items-center justify-center bg-black/50 z-50 p-4">
           <div className="bg-white rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 w-full sm:w-full sm:max-w-md">
-            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Delete Task</h3>
+            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
+              Delete Task
+            </h3>
             <p className="text-sm sm:text-base text-gray-600 mb-6 break-words">
               Are you sure you want to delete "{taskToDelete.text}"?
             </p>
