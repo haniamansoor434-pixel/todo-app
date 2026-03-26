@@ -22,7 +22,7 @@ export default function Todo() {
   const [search, setSearch] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  
   const filteredTasks = tasks.filter((task) => {
     return task.text?.toLowerCase().includes(search.toLowerCase());
   });
@@ -45,6 +45,7 @@ export default function Todo() {
             setLoading={setLoading}
             successMsg={successMsg}
             setSuccessMsg={setSuccessMsg}
+            
           />
         );
 
@@ -151,6 +152,7 @@ export default function Todo() {
           setLoading={setLoading}
           successMsg={successMsg}
           setSuccessMsg={setSuccessMsg}
+        
         />
 
         <div className="flex-1 overflow-y-auto">

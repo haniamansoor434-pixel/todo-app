@@ -8,6 +8,7 @@ import FilterTasksPriority from "./FilterTasksPriority";
 export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked = false }) {
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [filteredTasks, setFilteredTasks] = useState(tasks);
+  
 
   useEffect(() => {
     setFilteredTasks(showChecked ? tasks : tasks.filter((t) => !t.checked));
@@ -83,7 +84,7 @@ export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked
               {task.checked ? "Done" : "In Progress"}
             </span>
 
-            <EditTask task={task} setSuccessMsg={setSuccessMsg} />
+            <EditTask successMsg={successMsg} task={task} setSuccessMsg={setSuccessMsg} />
 
             <button
               onClick={() => setTaskToDelete(task)}

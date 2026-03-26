@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { SquarePen } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import db from '../../firebase';
+import NewTask from './NewTask';
 
-export default function EditTask({ task, setSuccessMsg }) {
+export default function EditTask({ task, successMsg,setSuccessMsg }) {
   const [editTask, setEditTask] = useState(null);
   const [newText, setNewText] = useState("");
+   const [error, setError] = useState("");
+  
+  
 
   const openEditModal = (task) => {
     setEditTask(task);
@@ -13,7 +17,13 @@ export default function EditTask({ task, setSuccessMsg }) {
   };
 
   const updateTask = async (id) => {
-    if (!newText.trim()) return; 
+    if (newText === task.text){
+      setError("Write something first..")
+      return;
+    }
+    setError("");
+    
+   
     try {
       await updateDoc(doc(db, "tasks", id), { text: newText });
       setSuccessMsg("Task updated successfully!");
@@ -40,6 +50,9 @@ export default function EditTask({ task, setSuccessMsg }) {
           <div className="bg-white rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 w-full sm:max-w-md">
             <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Edit Task</h3>
             
+            
+            {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+
             <input
               type="text"
               value={newText}
@@ -55,6 +68,7 @@ export default function EditTask({ task, setSuccessMsg }) {
               >
                 Cancel
               </button>
+
               <button
                 className="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 text-sm sm:text-base font-medium transition-colors"
                 onClick={() => updateTask(editTask.id)}
@@ -63,6 +77,11 @@ export default function EditTask({ task, setSuccessMsg }) {
               </button>
             </div>
           </div>
+            {successMsg && (
+        <div className="fixed top-4 sm:top-6 md:top-10 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 bg-green-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg z-50 animate-fadeInOut text-sm sm:text-base max-w-sm">
+          {successMsg}
+        </div>
+      )}
         </div>
       )}
     </>

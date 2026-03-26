@@ -12,9 +12,12 @@ export default function NewTask({
   setLoading,
   successMsg,
   setSuccessMsg,
+ 
 }) {
   const [priority, setPriority] = useState("");
   const [error, setError] = useState("");
+  
+ 
 
   const addTask = async () => {
     if (!task) {
@@ -32,7 +35,7 @@ export default function NewTask({
       await addDoc(collection(db, "tasks"), {
         text: task,
         checked: false,
-        priority: priority,
+        priority: priority|| "Low",
         status: "In Progress",
         createdAt: serverTimestamp(),
       });
