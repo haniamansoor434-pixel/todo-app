@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Trash } from "lucide-react";
 import { doc, deleteDoc, updateDoc } from "firebase/firestore";
 import db from "../../firebase";
-import EditTask from "./Edittask";
+import EditTask from "./EditTask";
 import FilterTasksPriority from "./FilterTasksPriority";
 
 export default function TaskList({ tasks, successMsg, setSuccessMsg, showChecked = false }) {
